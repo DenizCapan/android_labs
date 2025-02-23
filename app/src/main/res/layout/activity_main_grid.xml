@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:columnCount="2"
+    android:rowCount="4"
+    android:padding="16dp">
+
+    <!-- Row 1: TextView & Flag -->
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="197dp"
+        android:layout_height="wrap_content"
+        android:layout_columnSpan="1"
+        android:layout_gravity="fill"
+        android:text="@string/textview_label"
+        android:textSize="30sp" />
+
+    <!-- Row 2: Switch -->
+    <ImageButton
+        android:id="@+id/imageButton"
+        android:layout_width="214dp"
+        android:layout_height="wrap_content"
+        android:layout_rowSpan="2"
+        android:layout_columnSpan="1"
+        android:layout_gravity="fill"
+        android:contentDescription="@string/flag_description"
+        android:scaleType="fitXY"
+        android:src="@drawable/flag_usa" />
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/switchToggle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/switch_text"
+        android:layout_columnSpan="1"
+        android:layout_gravity="fill" />
+
+    <!-- Row 3: Button & Checkbox -->
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/button_text"
+        android:layout_columnSpan="1"
+        android:layout_gravity="fill" />
+
+    <CheckBox
+        android:id="@+id/checkBox"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/checkbox_text"
+        android:layout_columnSpan="1"
+        android:layout_gravity="fill" />
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="wrap_content"
+        android:layout_height="428dp"
+        android:layout_columnSpan="2"
+        android:layout_gravity="fill"
+        android:autofillHints="name"
+        android:hint="@string/edittext_hint"
+        android:inputType="text" />
+</GridLayout>
