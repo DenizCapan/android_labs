@@ -1,19 +1,15 @@
 <resources>
-    <string name="app_name">lab_2</string>
-    <string name="hello_world">Hello World</string>
-    <string name="button_text">I\'m a button!</string>
-    <string name="textview_label">I love Android</string>
-    <string name="button_press">PRESS ME</string>
-    <string name="checkbox_text">Check this out!</string>
-    <string name="switch_text">Switch on/off</string>
-    <string name="edittext_hint">I love Android</string>
-    <string name="toast_message">Label has been updated.</string>
-    <string name="flag">flag_usa</string>
-    <string name="flag_description">Switch language</string>
-    <string name="snack_bar">The checkbox is now</string>
-    <string name="checkbox_on">On</string>
-    <string name="checkbox_off">Off</string>
-    <string name="undo">Undo</string>
-    <string name="todo">TODO</string>
+    <string name="app_name">lab_3</string>
+    <string name="enter_your_name">Enter your name</string>
+    <string name="name_hint">Enter your name</string>
+    <string name="hint_name">Type your name here..</string>
+
+    <string name="next">NEXT</string>
+    <string name="welcome">Welcome!</string>
+    <string name="do_not_call_me">Don\'t call me that</string>
+    <string name="button_no_call">Don\'t call me that</string>
+    <string name="thank_you">Thank You</string>
+    <string name="autofillHints">name</string>
+    <color name="purple_500">#6200EE</color>
 
 </resources>
