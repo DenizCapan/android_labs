@@ -1,67 +1,74 @@
 package com.example.android_labs;
 
-import android.content.Intent;
-import android.content.SharedPreferences;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.EditText;
-
-import androidx.annotation.Nullable;
+import android.widget.ListView;
+import android.widget.Switch;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
-    private EditText editTextName;
-    private static final String PREFS_NAME = "UserPrefs";
-    private static final String KEY_NAME = "username";
-    private static final int REQUEST_CODE = 1; // Code for startActivityForResult
+    private EditText inputTask;
+    @SuppressLint("UseSwitchCompatOrMaterialCode")
+    private Switch urgentSwitch;
+    private final List<TodoItem> todoList = new ArrayList<>();
+    private TodoAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        editTextName = findViewById(R.id.editTextName);
-        Button btnNext = findViewById(R.id.button_next);
+        // Initialize UI elements
+        ListView listView = findViewById(R.id.listView);
+        inputTask = findViewById(R.id.inputTask);
+        urgentSwitch = findViewById(R.id.urgentSwitch);
+        Button addButton = findViewById(R.id.addButton);
 
-        // Load saved name from SharedPreferences
-        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        String savedName = preferences.getString(KEY_NAME, "");
-        editTextName.setText(savedName);
+        // Set up adapter for ListView
+        adapter = new TodoAdapter(this, todoList);
+        listView.setAdapter(adapter);
 
-        // Handle button click
-        btnNext.setOnClickListener(v -> {
-            String username = editTextName.getText().toString();
-            Intent intent = new Intent(MainActivity.this, NameActivity.class);
-            intent.putExtra("USERNAME", username);
-            startActivityForResult(intent, REQUEST_CODE); // Start NameActivity for result
+        // Handle "ADD" button click
+        addButton.setOnClickListener(v -> {
+            String taskText = inputTask.getText().toString().trim();
+            if (!taskText.isEmpty()) {
+                boolean isUrgent = urgentSwitch.isChecked();
+                todoList.add(new TodoItem(taskText, isUrgent));
+                adapter.notifyDataSetChanged();  // Refresh ListView
+                inputTask.setText("");  // Clear input field
+                urgentSwitch.setChecked(false);  // Reset switch
+
+                addButton.setBackgroundColor(ContextCompat.getColor(this, android.R.color.holo_green_dark));
+            }
+        });
+
+        // Handle long click to delete a task
+        listView.setOnItemLongClickListener((parent, view, position, id) -> {
+            showDeleteDialog(position);
+            return true;
         });
     }
 
-    @Override
-    protected void onPause() {
-        super.onPause();
-        // Save name to SharedPreferences when activity pauses
-        SharedPreferences preferences = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
-        SharedPreferences.Editor editor = preferences.edit();
-        editor.putString(KEY_NAME, editTextName.getText().toString());
-        editor.apply();
+    // Show a confirmation dialog before deleting a task
+    private void showDeleteDialog(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle(getString(R.string.delete_task)) // Dialog title
+                .setMessage(getString(R.string.delete_message) + " " + todoList.get(position).getTask()) // Dialog message
+                .setPositiveButton(getString(R.string.yes), (dialog, which) -> {
+                    todoList.remove(position);  // Remove item from list
+                    adapter.notifyDataSetChanged(); // Refresh ListView
+                })
+                .setNegativeButton(getString(R.string.no), (dialog, which) -> dialog.dismiss()) // Just close dialog
+                .create()
+                .show();
     }
 
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == REQUEST_CODE) {
-            switch (resultCode) {
-                case 0:
-                    // User wants to change their name (do nothing)
-                    break;
-                case 1:
-                    // User is happy, close the app
-                    finish();
-                    break;
-            }
-        }
-    }
 }
+

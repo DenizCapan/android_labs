@@ -12,22 +12,15 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Android_labs"
         tools:targetApi="31">
-
-        <!-- Main Activity (Launcher) -->
         <activity
             android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
-        <!-- Name Activity -->
-        <activity
-            android:name=".NameActivity"
-            android:exported="false" />
-
     </application>
 
 </manifest>

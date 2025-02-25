@@ -1,14 +1,15 @@
-<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">lab_3</string>
-    <string name="enter_your_name">Entrez votre nom</string>
-    <string name="name_hint">Entrez votre nom</string>
-    <string name="hint_name">Tapez votre nom ici..</string>
-    <string name="next">SUIVANT</string>
-    <string name="welcome">Bienvenue!</string>
-    <string name="do_not_call_me">NE M\'APPELEZ PAS COMME ÇA</string>
-    <string name="button_no_call">NE M\'APPELEZ PAS COMME ÇA</string>
-    <string name="thank_you">MERCI</string>
-    <string name="autofillHints">nom</string>
+    <string name="app_name">CST2335 lab_4</string>
+    <string name="hint_type_here">Écrivez ici</string>
+    <string name="urgent">Urgent</string>
+    <string name="add">AJOUTER</string>
+    <string name="lab_title">CST2335 lab_4</string>
     <color name="purple_500">#6200EE</color>
+    <string name="type_here">Tapez ici</string>
+    <string name="delete_task">Voulez-vous supprimer ceci?</string>
+    <string name="delete_message">La ligne sélectionnée est</string>
+    <string name="yes">Oui</string>
+    <string name="no">Non</string>
+    <color name="urgent_green">@android:color/holo_green_dark</color>
+
 </resources>
