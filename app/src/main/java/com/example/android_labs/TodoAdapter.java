@@ -13,6 +13,7 @@ public class TodoAdapter extends BaseAdapter {
     private final Context context;
     private final List<TodoItem> todoList;
 
+    // Constructor
     public TodoAdapter(Context context, List<TodoItem> todoList) {
         this.context = context;
         this.todoList = todoList;
@@ -20,7 +21,9 @@ public class TodoAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
+
         return todoList.size();
+
     }
 
     @Override
@@ -30,7 +33,7 @@ public class TodoAdapter extends BaseAdapter {
 
     @Override
     public long getItemId(int position) {
-        return position;
+        return todoList.get(position).getId(); // Returns the database ID
     }
 
     @Override
@@ -41,29 +44,47 @@ public class TodoAdapter extends BaseAdapter {
             LayoutInflater inflater = LayoutInflater.from(context);
             convertView = inflater.inflate(R.layout.list_item, parent, false);
 
+            // Initialize ViewHolder
             holder = new ViewHolder();
             holder.taskText = convertView.findViewById(R.id.taskText);
+
+            // Handle case where taskText might be null
+            if (holder.taskText == null) {
+                throw new IllegalStateException("TextView with ID 'taskText' not found in list_item.xml");
+            }
+
             convertView.setTag(holder);
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
 
+        // Get the current TodoItem
         TodoItem item = todoList.get(position);
-        holder.taskText.setText(item.getTask());
 
-        // Set background color based on urgency
-        if (item.isUrgent()) {
-            convertView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.holo_red_dark));
-            holder.taskText.setTextColor(ContextCompat.getColor(context, android.R.color.white));
+        if (item != null) {
+            holder.taskText.setText(item.getTask());
+
+            // Set background color based on urgency
+            if (item.isUrgent()) {
+                convertView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.holo_red_dark));
+                holder.taskText.setTextColor(ContextCompat.getColor(context, android.R.color.white));
+            } else {
+                convertView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
+                holder.taskText.setTextColor(ContextCompat.getColor(context, android.R.color.black));
+            }
         } else {
-            convertView.setBackgroundColor(ContextCompat.getColor(context, android.R.color.transparent));
-            holder.taskText.setTextColor(ContextCompat.getColor(context, android.R.color.black));
+            // Use string resource for error message instead of hardcoding text
+            holder.taskText.setText(context.getString(R.string.error_task_null));
         }
 
         return convertView;
     }
 
-    static class ViewHolder {
+    // ViewHolder pattern for better performance
+    private static class ViewHolder {
         TextView taskText;
     }
 }
+
+
+
