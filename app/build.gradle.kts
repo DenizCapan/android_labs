@@ -9,6 +9,7 @@ android {
     defaultConfig {
         applicationId = "com.example.android_labs"
         minSdk = 28
+        //noinspection OldTargetApi
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -38,3 +39,7 @@ dependencies {
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
 }
+
+
+
+

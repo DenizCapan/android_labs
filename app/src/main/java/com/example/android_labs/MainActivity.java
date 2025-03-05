@@ -1,7 +1,5 @@
 package com.example.android_labs;
 
-
-import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,14 +13,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-    // Debugging Tag
+    private static final String TAG = "MainActivity"; // Debugging Tag
+
     private EditText inputTask;
     private SwitchCompat urgentSwitch;
     private List<TodoItem> todoList;
     private TodoAdapter adapter;
     private TodoDatabaseHelper dbHelper;
-
-    @SuppressLint("WrongViewCast")
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,32 +36,15 @@ public class MainActivity extends AppCompatActivity {
         dbHelper = new TodoDatabaseHelper(this);
         todoList = new ArrayList<>();
 
-        // Load saved tasks from database
-        loadTasksFromDatabase();
-
-        // Set up adapter
+        // Initialize the adapter BEFORE loading tasks
         adapter = new TodoAdapter(this, todoList);
         listView.setAdapter(adapter);
 
+        // Load saved tasks from database
+        loadTasksFromDatabase();
+
         // Add button click event
-        addButton.setOnClickListener(v -> {
-            String taskText = inputTask.getText().toString().trim();
-            boolean isUrgent = urgentSwitch.isChecked();
-
-            if (!taskText.isEmpty()) {
-                // Insert task into database
-                long newTaskId = dbHelper.insertTask(taskText, isUrgent);
-                if (newTaskId != -1) {
-                    // Add to the list and refresh UI
-                    todoList.add(new TodoItem((int) newTaskId, taskText, isUrgent));
-                    adapter.notifyDataSetChanged();
-                    inputTask.setText(""); // Clear input field
-
-                } else {
-                    Log.e("DB_ERROR", "Failed to insert task into database");
-                }
-            }
-        });
+        addButton.setOnClickListener(v -> addNewTask());
 
         // Long click to delete an item
         listView.setOnItemLongClickListener((parent, view, position, id) -> {
@@ -75,19 +55,48 @@ public class MainActivity extends AppCompatActivity {
 
     private void loadTasksFromDatabase() {
         todoList.clear(); // Prevent duplicate entries
+
         Cursor cursor = dbHelper.getAllTasks();
         if (cursor != null) {
-            dbHelper.printCursor(cursor); // ✅ Corrected call to printCursor()
-
-            while (cursor.moveToNext()) {
-                long id = cursor.getLong(0);
-                String taskText = cursor.getString(1);
-                boolean isUrgent = cursor.getInt(2) == 1;
-                todoList.add(new TodoItem((int) id, taskText, isUrgent));
+            try {
+                while (cursor.moveToNext()) {
+                    int id = cursor.getInt(0);
+                    String taskText = cursor.getString(1);
+                    boolean isUrgent = cursor.getInt(2) == 1;
+                    todoList.add(new TodoItem(id, taskText, isUrgent));
+                }
+            } finally {
+                cursor.close(); // Ensure cursor is closed properly to prevent memory leaks
             }
-            cursor.close(); // Prevent memory leak
+        } else {
+            Log.e(TAG, "Cursor is null. Could not load tasks.");
         }
-        adapter.notifyDataSetChanged(); // ✅ Ensure UI refresh
+
+        if (adapter != null) {
+            adapter.updateList(todoList); // ✅ Refresh UI safely
+        } else {
+            Log.e(TAG, "Adapter is NULL! Can't update list.");
+        }
+    }
+
+    private void addNewTask() {
+        String taskText = inputTask.getText().toString().trim();
+        boolean isUrgent = urgentSwitch.isChecked();
+
+        if (taskText.isEmpty()) {
+            inputTask.setError("Task cannot be empty!");
+            return; // Exit if input is empty
+        }
+
+        // Insert task into database
+        long newTaskId = dbHelper.insertTask(taskText, isUrgent);
+        if (newTaskId != -1) {
+            todoList.add(new TodoItem((int) newTaskId, taskText, isUrgent));
+            adapter.notifyDataSetChanged(); // ✅ Refresh UI
+            inputTask.setText(""); // Clear input field
+        } else {
+            Log.e(TAG, "Failed to insert task into database.");
+        }
     }
 
     private void showDeleteDialog(int position) {
@@ -96,18 +105,19 @@ public class MainActivity extends AppCompatActivity {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle(getString(R.string.delete_task))
                 .setMessage(getString(R.string.delete_message) + " " + item.getTask())
-                .setPositiveButton(getString(R.string.yes), (dialog, which) -> {
-                    int rowsDeleted = dbHelper.deleteTask(item.getId()); // ✅ Check if deletion was successful
-                    if (rowsDeleted > 0) {
-                        todoList.remove(position); // Remove from list
-                        adapter.notifyDataSetChanged(); // Refresh UI
-                    } else {
-                        Log.e("DB_ERROR", "Failed to delete task ID: " + item.getId());
-                    }
-                })
+                .setPositiveButton(getString(R.string.yes), (dialog, which) -> deleteTask(position, item))
                 .setNegativeButton(getString(R.string.no), null)
                 .create()
                 .show();
     }
-}
 
+    private void deleteTask(int position, TodoItem item) {
+        int rowsDeleted = dbHelper.deleteTask(item.getId());
+        if (rowsDeleted > 0) {
+            todoList.remove(position);
+            adapter.notifyDataSetChanged(); // ✅ Ensure UI updates after deletion
+        } else {
+            Log.e(TAG, "Failed to delete task ID: " + item.getId());
+        }
+    }
+}

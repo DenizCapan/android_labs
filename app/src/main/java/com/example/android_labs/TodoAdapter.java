@@ -11,29 +11,27 @@ import java.util.List;
 
 public class TodoAdapter extends BaseAdapter {
     private final Context context;
-    private final List<TodoItem> todoList;
+    private List<TodoItem> todoList;
 
     // Constructor
     public TodoAdapter(Context context, List<TodoItem> todoList) {
         this.context = context;
-        this.todoList = todoList;
+        this.todoList = (todoList != null) ? todoList : new java.util.ArrayList<>();
     }
 
     @Override
     public int getCount() {
-
-        return todoList.size();
-
+        return (todoList != null) ? todoList.size() : 0;
     }
 
     @Override
     public Object getItem(int position) {
-        return todoList.get(position);
+        return (todoList != null) ? todoList.get(position) : null;
     }
 
     @Override
     public long getItemId(int position) {
-        return todoList.get(position).getId(); // Returns the database ID
+        return (todoList != null) ? todoList.get(position).getId() : -1;
     }
 
     @Override
@@ -44,14 +42,8 @@ public class TodoAdapter extends BaseAdapter {
             LayoutInflater inflater = LayoutInflater.from(context);
             convertView = inflater.inflate(R.layout.list_item, parent, false);
 
-            // Initialize ViewHolder
             holder = new ViewHolder();
             holder.taskText = convertView.findViewById(R.id.taskText);
-
-            // Handle case where taskText might be null
-            if (holder.taskText == null) {
-                throw new IllegalStateException("TextView with ID 'taskText' not found in list_item.xml");
-            }
 
             convertView.setTag(holder);
         } else {
@@ -73,18 +65,20 @@ public class TodoAdapter extends BaseAdapter {
                 holder.taskText.setTextColor(ContextCompat.getColor(context, android.R.color.black));
             }
         } else {
-            // Use string resource for error message instead of hardcoding text
             holder.taskText.setText(context.getString(R.string.error_task_null));
         }
 
         return convertView;
     }
 
-    // ViewHolder pattern for better performance
+    // Update list method
+    public void updateList(List<TodoItem> newList) {
+        this.todoList = newList != null ? newList : new java.util.ArrayList<>();
+        notifyDataSetChanged();
+    }
+
+    // ViewHolder pattern for performance
     private static class ViewHolder {
         TextView taskText;
     }
 }
-
-
-
